@@ -1,0 +1,28 @@
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Sensitive environment variables
+.env
+
+# Local database
+db.sqlite3
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS files
+.DS_Store
+Thumbs.db
+serviceAccountKey.json
+.env
+db.sqlite3
+db.sqlite3.bak
+__pycache__/
+*.pyc
+media/
+static/

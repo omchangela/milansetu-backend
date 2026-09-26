@@ -1,0 +1,580 @@
+{
+  "info": {
+    "name": "MILAN-SETU API",
+    "description": "Complete API collection for MILAN-SETU matrimonial platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "csrf_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Get CSRF Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var data = pm.response.json();",
+                  "if (data.csrfToken) {",
+                  "    pm.collectionVariables.set('csrf_token', data.csrfToken);",
+                  "    console.log('CSRF token saved:', data.csrfToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/signup/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "signup", ""]
+            },
+            "description": "Fetches the CSRF token. Run this before Signup. Token is auto-saved to collection variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Signup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', data.access);",
+                  "    pm.collectionVariables.set('refresh_token', data.refresh);",
+                  "    console.log('Tokens saved. User ID:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRFToken",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ravi.kumar@example.com\",\n  \"password\": \"SecurePass123\",\n  \"confirm_password\": \"SecurePass123\",\n  \"phone\": \"+919876543210\",\n  \"full_name\": \"Ravi Kumar\",\n  \"age\": 28,\n  \"height_cm\": 175,\n  \"religion\": \"Hindu\",\n  \"mother_tongue\": \"Hindi\",\n  \"marital_status\": \"never_married\",\n  \"father_occupation\": \"Business\",\n  \"mother_occupation\": \"Homemaker\",\n  \"siblings_count\": 1,\n  \"siblings_details\": \"One younger sister\",\n  \"family_values\": \"Traditional\",\n  \"industry\": \"Information Technology\",\n  \"education\": \"B.Tech Computer Science\",\n  \"current_designation\": \"Software Engineer\",\n  \"current_company\": \"Infosys\",\n  \"annual_income_min\": 800000.00,\n  \"annual_income_max\": 1200000.00,\n  \"income_unit\": \"INR\",\n  \"date_of_birth\": \"1996-06-15\",\n  \"time_of_birth\": \"10:30:00\",\n  \"birth_place\": \"New Delhi\",\n  \"zodiac_sign\": \"Gemini\",\n  \"manglik_status\": \"no\",\n  \"kundali_url\": \"https://example.com/kundali/ravi.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/signup/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "signup", ""]
+            },
+            "description": "Register a new user. Run 'Get CSRF Token' first. Access & refresh tokens are auto-saved."
+          },
+          "response": []
+        },
+        {
+          "name": "Signup (Minimal - Email & Password Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', data.access);",
+                  "    pm.collectionVariables.set('refresh_token', data.refresh);",
+                  "    console.log('Tokens saved. User ID:', data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRFToken",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"minimal.user@example.com\",\n  \"password\": \"SecurePass123\",\n  \"confirm_password\": \"SecurePass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/signup/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "signup", ""]
+            },
+            "description": "Register with only required fields. Profile fields can be filled later."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Get JWT Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', data.access);",
+                  "    pm.collectionVariables.set('refresh_token', data.refresh);",
+                  "    console.log('Tokens saved.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ravi.kumar@example.com\",\n  \"password\": \"SecurePass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "token", ""]
+            },
+            "description": "Login with email and password. Access & refresh tokens are auto-saved to collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', data.access);",
+                  "    if (data.refresh) {",
+                  "        pm.collectionVariables.set('refresh_token', data.refresh);",
+                  "    }",
+                  "    console.log('Access token refreshed.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "token", "refresh", ""]
+            },
+            "description": "Get a new access token using the refresh token."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{access_token}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/verify/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "token", "verify", ""]
+            },
+            "description": "Verify whether a JWT access token is still valid."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Profiles",
+      "item": [
+        {
+          "name": "List All Profiles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/profiles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "profiles", ""]
+            },
+            "description": "Retrieve all profile_details records. Requires JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Priya Sharma\",\n  \"age\": 25,\n  \"height_cm\": 162,\n  \"religion\": \"Hindu\",\n  \"mother_tongue\": \"Tamil\",\n  \"marital_status\": \"never_married\",\n  \"father_occupation\": \"Doctor\",\n  \"mother_occupation\": \"Teacher\",\n  \"siblings_count\": 2,\n  \"siblings_details\": \"One elder brother, one younger brother\",\n  \"family_values\": \"Moderate\",\n  \"industry\": \"Healthcare\",\n  \"education\": \"MBBS\",\n  \"current_designation\": \"Resident Doctor\",\n  \"current_company\": \"AIIMS Delhi\",\n  \"annual_income_min\": 600000.00,\n  \"annual_income_max\": 900000.00,\n  \"income_unit\": \"INR\",\n  \"date_of_birth\": \"1999-03-20\",\n  \"time_of_birth\": \"08:15:00\",\n  \"birth_place\": \"Chennai\",\n  \"zodiac_sign\": \"Aries\",\n  \"manglik_status\": \"no\",\n  \"kundali_url\": \"https://example.com/kundali/priya.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/profiles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "profiles", ""]
+            },
+            "description": "Create a new profile entry in profile_details table. Requires JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/profiles/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "profiles", "1", ""]
+            },
+            "description": "Retrieve a single profile by its ID. Requires JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Priya Sharma Updated\",\n  \"age\": 26,\n  \"height_cm\": 162,\n  \"religion\": \"Hindu\",\n  \"mother_tongue\": \"Tamil\",\n  \"marital_status\": \"never_married\",\n  \"father_occupation\": \"Doctor\",\n  \"mother_occupation\": \"Teacher\",\n  \"siblings_count\": 2,\n  \"siblings_details\": \"One elder brother, one younger brother\",\n  \"family_values\": \"Moderate\",\n  \"industry\": \"Healthcare\",\n  \"education\": \"MBBS\",\n  \"current_designation\": \"Senior Resident\",\n  \"current_company\": \"AIIMS Delhi\",\n  \"annual_income_min\": 700000.00,\n  \"annual_income_max\": 1000000.00,\n  \"income_unit\": \"INR\",\n  \"date_of_birth\": \"1999-03-20\",\n  \"time_of_birth\": \"08:15:00\",\n  \"birth_place\": \"Chennai\",\n  \"zodiac_sign\": \"Aries\",\n  \"manglik_status\": \"no\",\n  \"kundali_url\": \"https://example.com/kundali/priya-updated.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/profiles/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "profiles", "1", ""]
+            },
+            "description": "Full update of a profile. All fields required. Requires JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_designation\": \"Consultant\",\n  \"annual_income_min\": 1500000.00,\n  \"annual_income_max\": 2000000.00\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/profiles/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "profiles", "1", ""]
+            },
+            "description": "Partial update — send only the fields you want to change. Requires JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Profile",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/profiles/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "profiles", "1", ""]
+            },
+            "description": "Delete a profile by ID. Returns 204 No Content on success. Requires JWT token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Validation Tests",
+      "item": [
+        {
+          "name": "Signup - Password Mismatch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRFToken",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"SecurePass123\",\n  \"confirm_password\": \"WrongPass456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/signup/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "signup", ""]
+            },
+            "description": "Expected: 400 Bad Request — passwords do not match."
+          },
+          "response": []
+        },
+        {
+          "name": "Signup - Duplicate Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRFToken",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ravi.kumar@example.com\",\n  \"password\": \"SecurePass123\",\n  \"confirm_password\": \"SecurePass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/signup/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "signup", ""]
+            },
+            "description": "Expected: 400 Bad Request — email already exists."
+          },
+          "response": []
+        },
+        {
+          "name": "Signup - Short Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-CSRFToken",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"123\",\n  \"confirm_password\": \"123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/signup/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "signup", ""]
+            },
+            "description": "Expected: 400 Bad Request — password too short (min 8 chars)."
+          },
+          "response": []
+        },
+        {
+          "name": "Profiles - No Token (Unauthorized)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/milansetu/profiles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "milansetu", "profiles", ""]
+            },
+            "description": "Expected: 401 Unauthorized — no JWT token provided."
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Wrong Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ravi.kumar@example.com\",\n  \"password\": \"WrongPassword\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "token", ""]
+            },
+            "description": "Expected: 401 Unauthorized — invalid credentials."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
