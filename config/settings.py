@@ -35,7 +35,9 @@ def _parse_allowed_hosts(raw: str) -> list[str]:
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = _parse_allowed_hosts(os.environ.get('ALLOWED_HOSTS', ''))
+ALLOWED_HOSTS = _parse_allowed_hosts(
+    os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,milansetu-backend-4pcr.onrender.com')
+)
 
 # ─── Custom user model ────────────────────────────────────────────────────────
 AUTH_USER_MODEL = 'users.User'
@@ -270,6 +272,8 @@ CORS_ALLOWED_ORIGINS = _parse_comma_separated_list(
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'https://gprasadreddyofficial-lab.github.io',
+        'https://milansetu.frontend.kappa.vercel.app',
+        'https://milansetu-frontend.vercel.app',
     ]
 )
 CORS_ALLOW_CREDENTIALS = True   # needed so the browser sends the CSRF cookie
@@ -283,7 +287,9 @@ CSRF_TRUSTED_ORIGINS = _parse_comma_separated_list(
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'https://gprasadreddyofficial-lab.github.io',
-        'https://milansetu-backend.onrender.com',
+        'https://milansetu-backend-4pcr.onrender.com',
+        'https://milansetu.frontend.kappa.vercel.app',
+        'https://milansetu-frontend.vercel.app',
     ]
 )
 # Cookie is readable by JS so the frontend can attach it as a header
