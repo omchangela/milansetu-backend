@@ -26,6 +26,26 @@ def health_check(request):
             import traceback
             migration_error = f"{str(e)}\n{traceback.format_exc()}"
 
+    seed_output = None
+    seed_error = None
+    if request.GET.get('seed') == 'true':
+        out = StringIO()
+        err = StringIO()
+        try:
+            call_command('seed_test_data', stdout=out, stderr=err)
+            from users.models import User
+            if not User.objects.filter(email='admin@milansetu.com').exists():
+                User.objects.create_superuser(
+                    email='admin@milansetu.com',
+                    password='Admin@MilanSetu2026',
+                )
+                seed_output = out.getvalue() + "\n[+] Admin user created: admin@milansetu.com"
+            else:
+                seed_output = out.getvalue() + "\n[!] Admin user admin@milansetu.com already exists"
+        except Exception as e:
+            import traceback
+            seed_error = f"{str(e)}\n{traceback.format_exc()}"
+
     try:
         connection.ensure_connection()
         with connection.cursor() as cursor:
@@ -37,7 +57,7 @@ def health_check(request):
         error = f"{str(e)}\n{traceback.format_exc()}"
 
     return JsonResponse({
-        "status": "ok" if db_status == "ok" and not migration_error else "error",
+        "status": "ok" if db_status == "ok" and not migration_error and not seed_error else "error",
         "database": db_status,
         "engine": connection.settings_dict.get('ENGINE'),
         "host": connection.settings_dict.get('HOST'),
@@ -46,6 +66,8 @@ def health_check(request):
         "has_users_table": "users" in db_tables,
         "migration_output": migration_output,
         "migration_error": migration_error,
+        "seed_output": seed_output,
+        "seed_error": seed_error,
         "error": error,
     })
 
