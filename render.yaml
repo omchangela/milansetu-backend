@@ -13,11 +13,11 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: "milansetu-backend.onrender.com"
+        value: "milansetu-backend-4pcr.onrender.com,milansetu-backend.onrender.com,.onrender.com"
       - key: CORS_ALLOWED_ORIGINS
-        value: "https://milansetu-frontend.vercel.app"
+        value: "https://milansetu-frontend-kappa.vercel.app,https://milansetu-frontend.vercel.app"
       - key: CSRF_TRUSTED_ORIGINS
-        value: "https://milansetu-frontend.vercel.app,https://milansetu-backend.onrender.com"
+        value: "https://milansetu-frontend-kappa.vercel.app,https://milansetu-frontend.vercel.app,https://milansetu-backend-4pcr.onrender.com,https://milansetu-backend.onrender.com"
       - key: DATABASE_URL
         fromDatabase:
           name: milansetu-db

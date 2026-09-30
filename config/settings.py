@@ -36,7 +36,7 @@ def _parse_allowed_hosts(raw: str) -> list[str]:
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = _parse_allowed_hosts(
-    os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,milansetu-backend-4pcr.onrender.com')
+    os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com,milansetu-backend-4pcr.onrender.com,milansetu-backend.onrender.com')
 )
 
 # ─── Custom user model ────────────────────────────────────────────────────────
@@ -266,32 +266,50 @@ def _parse_comma_separated_list(raw: str, default: list[str]) -> list[str]:
             parsed.append(val)
     return parsed
 
-CORS_ALLOWED_ORIGINS = _parse_comma_separated_list(
-    os.environ.get('CORS_ALLOWED_ORIGINS', ''),
-    default=[
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'https://gprasadreddyofficial-lab.github.io',
-        'https://milansetu.frontend.kappa.vercel.app',
-        'https://milansetu-frontend.vercel.app',
-    ]
-)
+DEFAULT_CORS_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://gprasadreddyofficial-lab.github.io',
+    'https://milansetu-frontend-kappa.vercel.app',
+    'https://milansetu.frontend.kappa.vercel.app',
+    'https://milansetu-frontend.vercel.app',
+]
+
+env_cors = _parse_comma_separated_list(os.environ.get('CORS_ALLOWED_ORIGINS', ''), default=[])
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(DEFAULT_CORS_ORIGINS + env_cors))
+
+# Regex matching to allow any Vercel deployment URL (previews, branches) & Render domains
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.vercel\.app$",
+    r"^https:\/\/.*\.onrender\.com$",
+]
+
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False').strip().lower() in ('true', '1', 'yes')
 CORS_ALLOW_CREDENTIALS = True   # needed so the browser sends the CSRF cookie
 
 
 # ─── CSRF ─────────────────────────────────────────────────────────────────────
 
-CSRF_TRUSTED_ORIGINS = _parse_comma_separated_list(
-    os.environ.get('CSRF_TRUSTED_ORIGINS', ''),
-    default=[
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'https://gprasadreddyofficial-lab.github.io',
-        'https://milansetu-backend-4pcr.onrender.com',
-        'https://milansetu.frontend.kappa.vercel.app',
-        'https://milansetu-frontend.vercel.app',
-    ]
-)
+DEFAULT_CSRF_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://gprasadreddyofficial-lab.github.io',
+    'https://milansetu-backend-4pcr.onrender.com',
+    'https://milansetu-backend.onrender.com',
+    'https://milansetu-frontend-kappa.vercel.app',
+    'https://milansetu.frontend.kappa.vercel.app',
+    'https://milansetu-frontend.vercel.app',
+    'https://*.vercel.app',
+    'https://*.onrender.com',
+]
+
+env_csrf = _parse_comma_separated_list(os.environ.get('CSRF_TRUSTED_ORIGINS', ''), default=[])
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(DEFAULT_CSRF_ORIGINS + env_csrf))
+
 # Cookie is readable by JS so the frontend can attach it as a header
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = 'Lax'
